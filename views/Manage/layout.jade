@@ -50,14 +50,8 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
 
 
                         app.controller 'AppHeadCtrl', ($rootScope, $scope, User, $window) ->
-                            $rootScope.user= User.get (user) ->
-                                    console.log 'удалось получить пользователя', user
-                            ,   (err) ->
-                                    console.log 'не удалось получить пользователя', err
-
-
                             $scope.logout= ->
-                                $scope.user.$logout (user) ->
+                                User.logout ->
                                     $window.location.href= '/welcome/'
                                     $scope.notify 'done', 'logout'
                                 , (err) ->
@@ -69,7 +63,6 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                                 $rootScope.user= new User
                             $scope.login= (loginForm) ->
                                 $scope.user.$login (user) ->
-                                    #user.pass= loginForm.password.$modelValue
                                     $window.location.href= '../engine/'
                                     $scope.notify 'done', 'authentication'
                                 , (err) ->
@@ -86,7 +79,7 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                                 $scope.edit.dialog.overlay= type
 
                         app.controller 'EditDialogCtrl', ($scope) ->
-                            $scope.hideEditDialog= () ->
+                            $scope.hideEditDialog= ->
                                 $scope.edit.dialog.overlay= null
 
 
@@ -97,7 +90,7 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
 
                 .navbar.navbar-static-top
 
-                    a.navbar-brand(ng-class="{active:'index'==app.route.name}", ng-href="{{app.prefix}}/")
+                    a.navbar-brand(ng-href="{{app.prefix}}/")
                         span jet engine
                         sup  {{app.version}}
 
@@ -105,30 +98,40 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
 
                         ul.nav.navbar-nav.pull-left
 
-                            li(ng-class="{active:'design'==app.route.name}"): a(ng-href="{{app.prefix}}/design")
+                            li: a(href="{{app.prefix}}/design")
                                 u Design
 
-                            li(ng-class="{active:'develop'==app.route.name}"): a(ng-href="{{app.prefix}}/develop")
+                            li: a(ng-href="{{app.prefix}}/develop")
                                 u Develop
 
-                            li(ng-class="{active:'apps'==app.route.name}"): a(ng-href="{{app.prefix}}/apps")
+                            li: a(ng-href="{{app.prefix}}/apps")
                                 u Applications
 
-                        ul.nav.navbar-nav.pull-right(ng-if="user && user.name && user.name != 'anonymous'")
 
-                            li: a(href='/project/')
-                                u Управление проектом
+                        if (!user || user.name == 'anonymous')
+                            ul.nav.navbar-nav.pull-right
 
-                            li: a(href='/engine/')
-                                u Управление системой
+                                li(ng-class="{active:'login'==app.dialog.overlay}"): a(ng-href="{{app.prefix}}/login")
+                                    u Sign In
 
-                            li: a(ng-href="/user")
-                                u {{user.name}}
+                        else
+                            ul.nav.navbar-nav.pull-right
 
-                        ul.nav.navbar-nav.pull-right(ng-if="!user || !user.name || user.name == 'anonymous'")
+                                li: a(href='/project/')
+                                    u Project
 
-                            li(ng-class="{active:'login'==app.dialog.overlay}"): a(ng-href="{{app.prefix}}/login")
-                                u Sign In
+                                li: a(href='/engine/')
+                                    u Engine
+
+                                li.dropdown
+                                    a
+                                        strong= user.name
+                                        i.caret
+                                    menu.nav.nav-list.dropdown-menu
+                                        li: a(ng-click="logout()") Logout
+
+
+
 
             main.b-app--body: .row
                 style

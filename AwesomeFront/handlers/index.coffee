@@ -1,4 +1,4 @@
-module.exports= (App, db, log) ->
+module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
     class AwesomeFrontApp extends App
 
         constructor: ->
@@ -11,8 +11,28 @@ module.exports= (App, db, log) ->
 
 
 
-            app.get '/init', (req, res) ->
-                res.render 'Manage/welcome/index.jade'
+            app.use db.redis.middleware()
+            app.use db.maria.middleware()
+
+
+
+            app.get '/init'
+            ,   $authenticate('user')
+            ,   $authorize('profile.select')
+            ,   $audit('Get personal information for rendering')
+
+            ,   (req, res, next) ->
+                    try
+                        req.profile (profile) ->
+                                log 'profile resolved', profile
+                                res.locals.user= profile
+                                res.render 'Manage/welcome/index.jade'
+                        ,   (err) ->
+                                log 'profile rejected', err
+                                next err
+
+                    catch err
+                        next err
 
 
 
