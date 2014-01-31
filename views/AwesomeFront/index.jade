@@ -1,0 +1,26 @@
+extends ../layout
+
+
+
+append head-scripts
+    script
+        :coffee
+            #app= angular.module 'awesomeFront', ['layout', 'awesome']
+
+            #app.constant 'version', '0.4.7'
+            #app.constant 'path', ''
+            #app.constant 'debug', console
+
+
+
+append app-main
+    .layout-landing
+        .row
+            .col-12
+                h1 js
+                    a: u jet engine
+                    p advanced angular on express
+                    p content management
+                    p framework for
+                    p node
+                    p.fly: i.icon-rocket

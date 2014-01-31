@@ -1,7 +1,7 @@
-include ../mixins
+include mixins
 
 doctype html
-html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
+html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
 
     head
@@ -17,6 +17,7 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                 link(rel='stylesheet', href='/styles/awesome-dialogs.css')
                 link(rel='stylesheet', href='/styles/jet.css')
 
+
             block head-scripts
                 script(src='/scripts/libs/jquery/jquery.min.js')
                 script(src='/scripts/libs/angular/angular.min.js')
@@ -30,8 +31,10 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
 
 
 
-                        app= angular.module 'app', []
+                        app= angular.module 'layout', []
 
+                        app.constant 'version', '0.4.7'
+                        app.constant 'path', ''
                         app.constant 'debug', console
 
 
@@ -49,6 +52,14 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                                         action: 'logout'
 
 
+
+                        app.config ($routeProvider, path, AppServiceProvider) ->
+                            # Диалоги
+                            $routeProvider.when '/login/:tab?', AppServiceProvider.Route.factory 'login', 'dialog',
+                                controller: 'LoginRouteDialogCtrl'
+
+
+
                         app.controller 'AppHeadCtrl', ($rootScope, $scope, User, $window) ->
                             $scope.logout= ->
                                 User.logout ->
@@ -56,6 +67,7 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                                     $scope.notify 'done', 'logout'
                                 , (err) ->
                                     $scope.notify 'error', err
+
 
 
                         app.controller 'LoginAppDialogCtrl', ($rootScope, $scope, User, $window) ->
@@ -69,18 +81,46 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                                     $scope.user.pass= ''
                                     $scope.notify 'error', err
 
-                        app.controller 'ViewCtrl', ($scope) ->
-                            $scope.edit= {
-                                dialog: {
-                                    overlay: null
-                                }
-                            }
-                            $scope.showEditDialog= (type) ->
-                                $scope.edit.dialog.overlay= type
 
-                        app.controller 'EditDialogCtrl', ($scope) ->
-                            $scope.hideEditDialog= ->
-                                $scope.edit.dialog.overlay= null
+
+                        #app.controller 'ViewCtrl', ($scope) ->
+                        #    $scope.edit=
+                        #        dialog:
+                        #            overlay: null
+
+                        #    $scope.showEditDialog= (type) ->
+                        #       $scope.edit.dialog.overlay= type
+
+
+
+                        #app.controller 'EditDialogCtrl', ($scope) ->
+                        #    $scope.hideEditDialog= ->
+                        #        $scope.edit.dialog.overlay= null
+
+
+
+                        #app.controller 'IndexRouteCtrl', ($scope) ->
+                        #    console.log 'IndexRouteCtrl'
+
+
+
+                        #app.controller 'DesignRouteCtrl', ($scope) ->
+                        #    console.log 'DesignRouteCtrl'
+
+
+
+                        app.controller 'DevelopRouteCtrl', ($scope) ->
+                            console.log 'DevelopRouteCtrl'
+
+
+
+                        app.controller 'AppsRouteCtrl', ($scope) ->
+                            console.log 'AppsRouteCtrl'
+
+
+                        app= angular.module 'awesomeFront', []
+
+
 
 
 
@@ -111,8 +151,12 @@ html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
                         if (!user || user.name == 'anonymous')
                             ul.nav.navbar-nav.pull-right
 
-                                li(ng-class="{active:'login'==app.dialog.overlay}"): a(ng-href="{{app.prefix}}/login")
+                                li: a(ng-href="{{app.prefix}}/login")
                                     u Sign In
+
+                                li: a(ng-href="{{app.prefix}}/registration")
+                                    u Registration
+
 
                         else
                             ul.nav.navbar-nav.pull-right
