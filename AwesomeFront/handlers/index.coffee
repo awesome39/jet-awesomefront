@@ -36,26 +36,6 @@ module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
 
 
 
-            app.get '/registration'
-            ,   $authenticate('user')
-            ,   $authorize('profile.select')
-            ,   $audit('Registration rendering')
-
-            ,   (req, res, next) ->
-                    try
-                        req.profile (profile) ->
-                                log 'profile resolved', profile
-                                res.locals.user= profile
-                                res.render 'AwesomeFront/registration/index'
-                        ,   (err) ->
-                                log 'profile rejected', err
-                                next err
-
-                    catch err
-                        next err
-
-
-
             app.get '/my'
             ,   $authenticate('user')
             ,   $authorize('profile.select')
@@ -66,7 +46,7 @@ module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
                         req.profile (profile) ->
                                 log 'profile resolved', profile
                                 res.locals.user= profile
-                                res.render 'AwesomeFront/registration/index'
+                                res.render 'AwesomeFront/my/index'
                         ,   (err) ->
                                 log 'profile rejected', err
                                 next err

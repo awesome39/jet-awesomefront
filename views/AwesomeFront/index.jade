@@ -5,11 +5,44 @@ extends ../layout
 append head-scripts
     script
         :coffee
-            #app= angular.module 'awesomeFront', ['layout', 'awesome']
+            app= angular.module 'awesomeFront', ['layout', 'awesome']
 
-            #app.constant 'version', '0.4.7'
-            #app.constant 'path', ''
-            #app.constant 'debug', console
+
+
+
+            app.config ($routeProvider, path, AppServiceProvider) ->
+                # Диалоги
+                $routeProvider.when '/login', AppServiceProvider.Route.factory 'login', 'dialog',
+                    controller: 'LoginRouteDialogCtrl'
+
+
+                $routeProvider.when '/signup', AppServiceProvider.Route.factory 'signup', 'dialog',
+                    controller: 'SignupRouteDialogCtrl'
+
+
+
+            app.controller 'LoginAppDialogCtrl', ($scope, User, $window) ->
+                $scope.user= new User
+                $scope.login= (loginForm) ->
+                    $scope.user.$login (user) ->
+                        $window.location.href= '../engine/'
+                        $scope.notify 'done', 'authentication'
+                    , (err) ->
+                        $scope.user.pass= ''
+                        $scope.notify 'error', err
+
+
+
+            app.controller 'SignupAppDialogCtrl', ($scope, User, $window) ->
+                $scope.user= new User
+                $scope.login= (signupForm) ->
+                    $scope.user.$signup (user) ->
+                        $window.location.href= '../engine/'
+                        $scope.notify 'done', 'authentication'
+                    , (err) ->
+                        $scope.user.pass= ''
+                        $scope.notify 'error', err
+
 
 
 
@@ -24,3 +57,6 @@ append app-main
                     p framework for
                     p node
                     p.fly: i.icon-rocket
+
+
+    +bLoginSignupAppDialog()

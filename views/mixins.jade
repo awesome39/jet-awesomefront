@@ -85,7 +85,7 @@ mixin bEditDialogBody()
 
 
 
-mixin bLoginAppDialog()
+mixin bLoginSignupAppDialog()
     .b-dialog--dialog--body.b-dialog--body
         if block
             block
@@ -94,9 +94,7 @@ mixin bLoginAppDialog()
                 .b-dialog--area(ng-click="hideViewDialog()")
 
                 .b-dialog--main
-                    .b-include-dialog(ng-if="dialog.overlay && dialog.templateUrl"): .b-include(ng-include="dialog.templateUrl")
-
-                    .b-users-login-dialog(ng-if="'login'==dialog.overlay", ng-controller="LoginAppDialogCtrl")
+                    .signin-dialog.b-users-login-dialog(ng-if="'login'==dialog.overlay", ng-controller="LoginAppDialogCtrl")
 
 
                         .b-dialog--head
@@ -109,7 +107,6 @@ mixin bLoginAppDialog()
                         .b-dialog--tabs
                             ul.nav.nav-tabs.pull-left
                                 li(ng-class="{active:!dialog.tab}"): a(ng-href="{{app.prefix}}/login") Вход в кабинет
-                                li(ng-class="{active:'console'==dialog.tab}"): a(ng-href="{{app.prefix}}/login/console") Вход в консоль
 
 
                         .b-dialog--body
@@ -131,3 +128,33 @@ mixin bLoginAppDialog()
                                         input(type='hidden', ng-model="lol", required)
                                         a.btn.btn-link(href='/auth/github'): u Вход c Github
                                         a.btn.btn-link(href='/auth/google'): u Вход c Google
+
+
+
+
+
+
+                    .signup-dialog.b-users-login-dialog(ng-if="'signup'==dialog.overlay", ng-controller="SignupAppDialogCtrl")
+
+
+                        .b-dialog--head
+                            i.icon-signin
+                            span Registration
+                            .b-dialog--acts
+                                a(ng-click="hideViewDialog()"): i.icon-remove
+
+
+                        .b-dialog--body
+                            .row
+                                .col-xs-12.col-sm-offset-2.col-sm-8.col-lg-offset-2.col-lg-5
+                                    form.form.form-lg(name='signupForm', ng-submit='signup(signupForm)').dialog-form
+                                        legend Sign up
+                                        input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.username')
+                                        input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.password')
+                                        input.input(type='text', name='email', placeholder='E-mail', required, ng-model='user.email')
+                                        .form-acts
+                                            .row
+                                                .col-xs-12
+                                                    button.b-btn.b-btn-primary.btn-block(type='submit', ng-disabled='!signupForm.$valid')
+                                                        i.icon-signin
+                                                        span Ok

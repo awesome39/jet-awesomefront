@@ -51,12 +51,10 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                                     params:
                                         action: 'logout'
 
-
-
-                        app.config ($routeProvider, path, AppServiceProvider) ->
-                            # Диалоги
-                            $routeProvider.when '/login/:tab?', AppServiceProvider.Route.factory 'login', 'dialog',
-                                controller: 'LoginRouteDialogCtrl'
+                                sighup:
+                                    method: 'post'
+                                    params:
+                                        action: 'sighup'
 
 
 
@@ -67,58 +65,6 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                                     $scope.notify 'done', 'logout'
                                 , (err) ->
                                     $scope.notify 'error', err
-
-
-
-                        app.controller 'LoginAppDialogCtrl', ($rootScope, $scope, User, $window) ->
-                            if not $rootScope.user
-                                $rootScope.user= new User
-                            $scope.login= (loginForm) ->
-                                $scope.user.$login (user) ->
-                                    $window.location.href= '../engine/'
-                                    $scope.notify 'done', 'authentication'
-                                , (err) ->
-                                    $scope.user.pass= ''
-                                    $scope.notify 'error', err
-
-
-
-                        #app.controller 'ViewCtrl', ($scope) ->
-                        #    $scope.edit=
-                        #        dialog:
-                        #            overlay: null
-
-                        #    $scope.showEditDialog= (type) ->
-                        #       $scope.edit.dialog.overlay= type
-
-
-
-                        #app.controller 'EditDialogCtrl', ($scope) ->
-                        #    $scope.hideEditDialog= ->
-                        #        $scope.edit.dialog.overlay= null
-
-
-
-                        #app.controller 'IndexRouteCtrl', ($scope) ->
-                        #    console.log 'IndexRouteCtrl'
-
-
-
-                        #app.controller 'DesignRouteCtrl', ($scope) ->
-                        #    console.log 'DesignRouteCtrl'
-
-
-
-                        app.controller 'DevelopRouteCtrl', ($scope) ->
-                            console.log 'DevelopRouteCtrl'
-
-
-
-                        app.controller 'AppsRouteCtrl', ($scope) ->
-                            console.log 'AppsRouteCtrl'
-
-
-                        app= angular.module 'awesomeFront', []
 
 
 
@@ -154,8 +100,8 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                                 li: a(ng-href="{{app.prefix}}/login")
                                     u Sign In
 
-                                li: a(ng-href="{{app.prefix}}/registration")
-                                    u Registration
+                                li: a(ng-href="{{app.prefix}}/signup")
+                                    u Register
 
 
                         else
@@ -185,8 +131,6 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                         }
 
                 .b-app--main: block app-main
-
-                +bLoginAppDialog()
 
 
 
