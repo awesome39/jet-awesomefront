@@ -1,0 +1,157 @@
+include ../mixins
+
+doctype html
+html(lang='ru', ng-app='manage', ng-controller='AppCtrl')
+
+
+    head
+        block head
+            meta(charset='utf-8')
+            title(ng-bind="app.title") JET ENGINE -- A NodeJS CMF...
+
+            block head-links
+                link(rel='stylesheet', href='/styles/awesome.css')
+                link(rel='stylesheet', href='/styles/awesome-navs.css')
+                link(rel='stylesheet', href='/styles/awesome-tabs.css')
+                link(rel='stylesheet', href='/styles/awesome-forms.css')
+                link(rel='stylesheet', href='/styles/awesome-dialogs.css')
+                link(rel='stylesheet', href='/styles/jet.css')
+
+            block head-scripts
+                script(src='/scripts/libs/jquery/jquery.min.js')
+                script(src='/scripts/libs/angular/angular.min.js')
+                script(src='/scripts/libs/angular/angular-animate.min.js')
+                script(src='/scripts/libs/angular/angular-resource.min.js')
+                script(src='/scripts/libs/angular/angular-route.min.js')
+                script(src='/scripts/awesome.js')
+
+                script
+                    :coffee
+
+
+
+                        app= angular.module 'app', []
+
+                        app.constant 'debug', console
+
+
+
+                        app.factory 'User', ($resource) ->
+                            $resource '/api/v1/user/:action', {},
+                                login:
+                                    method: 'post'
+                                    params:
+                                        action: 'login'
+
+                                logout:
+                                    method: 'get'
+                                    params:
+                                        action: 'logout'
+
+
+                        app.controller 'AppHeadCtrl', ($rootScope, $scope, User, $window) ->
+                            $rootScope.user= User.get (user) ->
+                                    console.log 'удалось получить пользователя', user
+                            ,   (err) ->
+                                    console.log 'не удалось получить пользователя', err
+
+
+                            $scope.logout= ->
+                                $scope.user.$logout (user) ->
+                                    $window.location.href= '/welcome/'
+                                    $scope.notify 'done', 'logout'
+                                , (err) ->
+                                    $scope.notify 'error', err
+
+
+                        app.controller 'LoginAppDialogCtrl', ($rootScope, $scope, User, $window) ->
+                            if not $rootScope.user
+                                $rootScope.user= new User
+                            $scope.login= (loginForm) ->
+                                $scope.user.$login (user) ->
+                                    #user.pass= loginForm.password.$modelValue
+                                    $window.location.href= '../engine/'
+                                    $scope.notify 'done', 'authentication'
+                                , (err) ->
+                                    $scope.user.pass= ''
+                                    $scope.notify 'error', err
+
+                        app.controller 'ViewCtrl', ($scope) ->
+                            $scope.edit= {
+                                dialog: {
+                                    overlay: null
+                                }
+                            }
+                            $scope.showEditDialog= (type) ->
+                                $scope.edit.dialog.overlay= type
+
+                        app.controller 'EditDialogCtrl', ($scope) ->
+                            $scope.hideEditDialog= () ->
+                                $scope.edit.dialog.overlay= null
+
+
+
+    body(ng-controller='ViewCtrl'): block body
+        .b-app
+            header.b-app--head(ng-controller="AppHeadCtrl"): block app-head
+
+                .navbar.navbar-static-top
+
+                    a.navbar-brand(ng-class="{active:'index'==app.route.name}", ng-href="{{app.prefix}}/")
+                        span jet engine
+                        sup  {{app.version}}
+
+                    .nav-collapse
+
+                        ul.nav.navbar-nav.pull-left
+
+                            li(ng-class="{active:'design'==app.route.name}"): a(ng-href="{{app.prefix}}/design")
+                                u Design
+
+                            li(ng-class="{active:'develop'==app.route.name}"): a(ng-href="{{app.prefix}}/develop")
+                                u Develop
+
+                            li(ng-class="{active:'apps'==app.route.name}"): a(ng-href="{{app.prefix}}/apps")
+                                u Applications
+
+                        ul.nav.navbar-nav.pull-right(ng-if="user && user.name && user.name != 'anonymous'")
+
+                            li: a(href='/project/')
+                                u Управление проектом
+
+                            li: a(href='/engine/')
+                                u Управление системой
+
+                            li: a(ng-href="/user")
+                                u {{user.name}}
+
+                        ul.nav.navbar-nav.pull-right(ng-if="!user || !user.name || user.name == 'anonymous'")
+
+                            li(ng-class="{active:'login'==app.dialog.overlay}"): a(ng-href="{{app.prefix}}/login")
+                                u Sign In
+
+            main.b-app--body: .row
+                style
+                    :less
+                        .layout-landing {
+                            margin: 10% 15%;
+                        }
+
+                .b-app--main: block app-main
+
+                +bLoginAppDialog()
+
+
+
+
+            menu.b-app--notifications(ng-if="app.notify.notifications.length")
+                .b-app--notification(ng-repeat="notification in app.notify.notifications")
+                    p.note(ng-if="'error'==notification.type") {{notification}}
+
+            section.b-app--demo  
+
+            footer.b-app--foot
+                .navbar
+                    a.navbar-brand(ng-class="{active:'index'==app.route.name}", ng-href="{{app.prefix}}/")
+                        span jet engine
+                        sup  {{app.version}}

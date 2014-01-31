@@ -1,0 +1,37 @@
+extends ./layout
+
+
+
+block b-page--head
+    h1 Управление отчетами
+
+
+
+block b-page--side
+
+    ul.nav.nav-list
+        li.active: a(ng-href="#/reports") Сводка
+
+
+
+block b-page--main
+
+    style.
+
+        form, fieldset, legend, label {
+            display: block;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    .row
+        h2 Отчеты будут тут
+        button() Создать сущность
+
+        .lol(style='padding: 30px;')
+            form.schema
+                fieldset
+                    legend Конструктор схемы
+
+                    label Имя:
+                        input(name='name', type='text')

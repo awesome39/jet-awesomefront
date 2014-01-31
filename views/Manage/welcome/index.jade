@@ -1,0 +1,61 @@
+extends ../layout
+
+append head-scripts
+    script
+        :coffee
+
+
+
+            app= angular.module 'manage', ['awesome', 'app']
+            app.constant 'version', '0.2'
+
+            app.constant 'path', ''
+
+
+
+            app.config ($routeProvider, path, AppServiceProvider) ->
+
+                $routeProvider.when path+'/', AppServiceProvider.Route.factory 'index', 'view',
+                    templateUrl:'partials/', controller: 'IndexRouteCtrl'
+
+                $routeProvider.when path+'/design', AppServiceProvider.Route.factory 'design', 'view',
+                    templateUrl:'partials/Design/', controller: 'DesignRouteCtrl'
+
+                $routeProvider.when path+'/develop', AppServiceProvider.Route.factory 'develop', 'view',
+                    templateUrl:'partials/Develop/', controller: 'DevelopRouteCtrl'
+
+                $routeProvider.when path+'/apps', AppServiceProvider.Route.factory 'apps', 'view',
+                    templateUrl:'partials/Apps/', controller: 'AppsRouteCtrl'
+
+                # Диалоги
+                $routeProvider.when '/login/:tab?', AppServiceProvider.Route.factory 'login', 'dialog',
+                    controller: 'LoginRouteDialogCtrl'
+
+
+
+            app.controller 'IndexRouteCtrl', ($scope) ->
+                console.log 'IndexRouteCtrl'
+
+            app.controller 'DesignRouteCtrl', ($scope) ->
+                console.log 'DesignRouteCtrl'
+
+            app.controller 'DevelopRouteCtrl', ($scope) ->
+                console.log 'DevelopRouteCtrl'
+
+            app.controller 'AppsRouteCtrl', ($scope) ->
+                console.log 'AppsRouteCtrl'
+
+
+
+
+append app-main
+    .layout-landing
+        .row
+            .col-12
+                h1 js
+                    a: u jet engine
+                    p advanced angular on express
+                    p content management
+                    p framework for
+                    p node
+                    p.fly: i.icon-rocket
