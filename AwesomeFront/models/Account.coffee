@@ -69,6 +69,117 @@ module.exports= (log) -> class Account
 
 
 
+
+
+    @create: (data, db, done) ->
+        dfd= do deferred
+
+        process.nextTick =>
+            try
+
+                err= null
+
+                if not data
+                    err= new @create.BadValueError 'data cannot be null'
+
+                if err then throw err
+
+                data= new @ data
+                data.type= 'user'
+
+                db.query """
+                    INSERT
+                        ??
+                       SET
+                        name= ?,
+                        type= ?,
+                        title= ?
+                    ;
+                    SELECT
+
+                        Profile.*,
+
+                        IFNULL(CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{',
+                            '"id":',Account.id,',',
+                            '"type":"',Account.type,'",',
+                            '"name":"',Account.name,'",',
+                            '"updatedAt":"',Account.updatedAt,'"',
+                        '}') ORDER BY
+                            (Account.type <=> 'local') DESC,
+                            Account.type
+                        ),']'), '[]') as accountsJson,
+
+                        IFNULL(CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{',
+                            '"id":',ProfileGroup.groupId,',',
+                            '"name":"',ProfileGroupProfile.name,'",',
+                            '"priority":',ProfileGroup.priority,',',
+                            '"updatedAt":"',ProfileGroup.updatedAt,'"',
+                        '}') ORDER BY
+                            ProfileGroup.priority
+                        ),']'), '[]') as groupsJson,
+
+                        IFNULL(CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{',
+                            '"id":',Permission.id,',',
+                            '"name":"',Permission.name,'",',
+                            '"profileId":',ProfilePermission.profileId,',',
+                            '"priority":',IF(Profile.id<=>ProfilePermission.profileId,0,ProfileGroup.priority),',',
+                            '"value":',ProfilePermission.value,',',
+                            '"updatedAt":"',ProfilePermission.updatedAt,'"',
+                        '}') ORDER BY
+                            (Profile.id <=> ProfilePermission.profileId) DESC,
+                            ProfileGroup.priority,
+                            Permission.name,
+                            ProfilePermission.value
+                        ),']'), '[]') as permissionsJson
+
+                      FROM ??
+                        as Profile
+
+                      LEFT JOIN ??
+                        as Account
+                        ON Account.profileId = Profile.id
+
+                      LEFT JOIN ??
+                        as ProfileGroup
+                        ON ProfileGroup.profileId = Profile.id
+
+                      LEFT JOIN ??
+                        as ProfileGroupProfile
+                        ON ProfileGroupProfile.id = ProfileGroup.groupId
+
+                      LEFT JOIN ??
+                        as ProfilePermission
+                        ON ProfilePermission.profileId = Profile.id OR ProfilePermission.profileId= ProfileGroup.groupId
+
+                      LEFT JOIN ??
+                        as Permission
+                        ON Permission.id = ProfilePermission.permissionId
+
+                     WHERE
+                        Profile.id= LAST_INSERT_ID()
+                    """
+                ,   [@table, data.name,'user',data.title, @table, @Account.table, @Group.table, @table, @Permission.table, @Permission.Permission.tablePermission]
+                ,   (err, res) =>
+                        if not err
+                            if res[0].affectedRows == 1 and res[1].length == 1
+                                data= new @ res[1][0]
+                                dfd.resolve data
+                            else
+                                err= Error 'profile not created'
+                        else
+                            dfd.reject err
+
+            catch err
+                dfd.reject err
+
+        dfd.promise
+
+    @create.BadValueError= class CreateBadValueError extends Error
+        constructor: (message) ->
+            @message= message
+
+
+
     @query: (query, db, done) ->
         accounts= []
 

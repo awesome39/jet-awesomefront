@@ -1,4 +1,4 @@
-module.exports= (App, db, log) ->
+module.exports= (App, AwesomeFrontSignupApi, db, log) ->
     class AwesomeFrontApi extends App
 
         constructor: ->
@@ -16,9 +16,14 @@ module.exports= (App, db, log) ->
 
 
 
+            app.use '/user', new AwesomeFrontSignupApi
+
+
 
 
             app.use (err, req, res, next) ->
+                console.log "Error [#{err.name}]: #{err.message}"
+
                 res.json
                     error: err.name
                     message: err.message

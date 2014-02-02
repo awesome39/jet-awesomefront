@@ -35,12 +35,14 @@ append head-scripts
 
             app.controller 'SignupAppDialogCtrl', ($scope, User, $window) ->
                 $scope.user= new User
-                $scope.login= (signupForm) ->
+                $scope.signup= (signupForm) ->
+                    $scope.user.emails= []
+                    $scope.user.emails.push
+                        value: $scope.user.email
                     $scope.user.$signup (user) ->
                         $window.location.href= '../engine/'
                         $scope.notify 'done', 'authentication'
                     , (err) ->
-                        $scope.user.pass= ''
                         $scope.notify 'error', err
 
 

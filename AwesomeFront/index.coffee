@@ -13,17 +13,15 @@ module.exports= class AwesomeFront extends Module
 
 
 
-        #
-        # Класс приложения Awesome
-        #
         @factory 'AwesomeFrontApp', require './handlers'
 
 
 
         #
-        # Класс приложения Awesome API
+        # API
         #
         @factory 'AwesomeFrontApi', require './handlers/Api/V1'
+        @factory 'AwesomeFrontSignupApi', require './handlers/Api/V1/Signup'
 
 
 

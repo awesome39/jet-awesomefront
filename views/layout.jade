@@ -51,14 +51,14 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                                     params:
                                         action: 'logout'
 
-                                sighup:
+                                signup:
                                     method: 'post'
                                     params:
-                                        action: 'sighup'
+                                        action: 'signup'
 
 
 
-                        app.controller 'AppHeadCtrl', ($rootScope, $scope, User, $window) ->
+                        app.controller 'AppHeadCtrl', ($scope, User, $window) ->
                             $scope.logout= ->
                                 User.logout ->
                                     $window.location.href= '/welcome/'

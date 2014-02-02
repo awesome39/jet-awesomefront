@@ -149,8 +149,9 @@ mixin bLoginSignupAppDialog()
                                 .col-xs-12.col-sm-offset-2.col-sm-8.col-lg-offset-2.col-lg-5
                                     form.form.form-lg(name='signupForm', ng-submit='signup(signupForm)').dialog-form
                                         legend Sign up
-                                        input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.username')
-                                        input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.password')
+                                        input.input(type='text', name='title', placeholder='Name', required, ng-model='user.title')
+                                        input.input(type='text', name='name', placeholder='Login', required, ng-model='user.name')
+                                        input.input(type='password', name='pass', placeholder='Password', required, ng-model='user.pass')
                                         input.input(type='text', name='email', placeholder='E-mail', required, ng-model='user.email')
                                         .form-acts
                                             .row
