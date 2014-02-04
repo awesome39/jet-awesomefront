@@ -1,4 +1,4 @@
-module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate, $authorize, db, log) ->
+module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerification, $audit, $authenticate, $authorize, db, log) ->
     class AwesomeFrontSignupApi extends App
 
         constructor: ->
@@ -26,6 +26,7 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
             ,   AwesomeFrontSignupApi.createProfilePhones()
             ,   AwesomeFrontSignupApi.createProfileAccount()
             ,   AwesomeFrontSignupApi.createProfilePermission()
+            ,   AwesomeFrontSignupApi.createEmailVerifyToken()
 
             ,   db.maria.middleware.transaction.commit()
 
@@ -42,38 +43,21 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
 
 
 
-            ###
-            Отдает указанного пользователя.
-            ###
-            app.get '/:userId(\\d+)'
-            ,   $authenticate('user')
-            ,   $authorize('profiles.select')
-            ,   $audit('Get personal information')
-
-            ,   AwesomeFrontSignupApi.getProfile('userId')
-
-            ,   (req, res, next) ->
-                    try
-                        req.profile (profile) ->
-                                log 'selected profile resolved', profile
-                                res.json profile
-                        ,   (err) ->
-                                log 'selected profile rejected', err
-                                next err
-                    catch err
-                        next new AwesomeFrontSignupApiError
-
 
 
             ###
             Включает или выключает указанного пользователя.
             ###
-            app.post '/:userId(\\d+)/enable'
-            ,   $authenticate('user')
-            ,   $authorize('profiles.enable')
-            ,   $audit('Act personal information')
+            app.post '/:token/enable'
+            ,   $audit('Verifying up personal information')
 
-            ,   AwesomeFrontSignupApi.enableProfile('userId')
+            ,   db.maria.middleware.transaction()
+
+            ,   AwesomeFrontSignupApi.getToken('token')
+            ,   AwesomeFrontSignupApi.enableProfileEmail()
+            ,   AwesomeFrontSignupApi.deleteToken()
+
+            ,   db.maria.middleware.transaction.commit()
 
             ,   (req, res, next) ->
                     try
@@ -120,7 +104,9 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
 
 
         @createProfile: -> (req, res, next) ->
-            req.profile= Profile.create req.body, req.maria
+            data= req.body
+            data.enabledAt= new Date
+            req.profile= Profile.create data, req.maria
             req.profile (profile) ->
                     res.profile= profile
                     next()
@@ -156,10 +142,19 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
 
         @createProfilePermission: -> (req, res, next) ->
             req.profile (profile) ->
-                console.log 'PROFILE', profile.id
                 req.profile.permission= ProfilePermission.createByName profile.id, 'profile.select', req.maria
                 req.profile.permission (permission) ->
                         res.profile.permission= permission
+                        next()
+                ,   (err) ->
+                        next(err)
+
+        @createEmailVerifyToken: -> (req, res, next) ->
+            req.profile (profile) ->
+                emailId= profile.emails.pop().id
+                req.profile.token= ProfileEmailVerification.create emailId, req.maria
+                req.profile.token (token) ->
+                        res.profile.token= token
                         next()
                 ,   (err) ->
                         next(err)
@@ -168,9 +163,20 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
 
 
 
-        @enableProfile: (paramProfileId) -> (req, res, next) ->
-            profileId= req.param paramProfileId
-            req.profile= Profile.enable profileId, req.body.enabled, req.maria
+        @getToken: (param) -> (req, res, next) ->
+            tokenString= req.param param
+            req.token= ProfileEmailVerification.getByToken tokenString, req.maria
+            req.token (token) ->
+                    res.token= token
+                    next()
+            ,   (err) ->
+                    if err instanceof ProfileEmailVerification.getByToken.BadValueError then res.status 400
+                    if err instanceof ProfileEmailVerification.getByToken.NotFoundError then res.status 404
+                next(err)
+
+        @enableProfile: -> (req, res, next) ->
+            profileId= req.token.profileId
+            req.profile= Profile.enable profileId, 1, req.maria
             req.profile (profile) ->
                     res.profile= profile
                     next()
@@ -179,7 +185,47 @@ module.exports= (App, Profile, Account, ProfilePermission, $audit, $authenticate
                     if err instanceof Profile.enable.NotFoundError then res.status 404
                     next(err)
 
+        @enableProfileEmail: -> (req, res, next) ->
+            emailId= req.token.emailId
+            req.profile (profile) ->
+                req.profile.email= Profile.enableEmail emailId, 1, req.maria
+                req.profile.email (email) ->
+                    res.profile.email= email
+                    next()
+                ,   (err) ->
+                    next(err)
 
+        @enableProfileAccount: -> (req, res, next) ->
+            profileId= req.token.profileId
+            req.profile.account= Account.enableByProfileId profileId, 1, req.maria
+            req.profile.account (account) ->
+                    res.account= account
+                    next()
+            ,   (err) ->
+                    if err instanceof Account.enableByProfileId.BadValueError then res.status 400
+                    if err instanceof Account.enableByProfileId.NotFoundError then res.status 404
+                    next(err)
+
+        @enablePermission: -> (req, res, next) ->
+            profileId= req.param param
+            req.profile.permission= Profile.enable profileId, req.body, req.maria
+            req.profile.permission (permission) ->
+                res.profile.permission= permission
+                next()
+            ,   (err) ->
+                if err instanceof Profile.enable.BadValueError then res.status 400
+                if err instanceof Profile.enable.NotFoundError then res.status 404
+                next(err)
+
+        @deleteToken: -> (req, res, next) ->
+            req.token= ProfileEmailVerification req.token.id, req.maria
+            req.token (token) ->
+                res.token= token
+                next()
+            ,   (err) ->
+                    if err instanceof ProfileEmailVerification.BadValueError then res.status 400
+                    if err instanceof ProfileEmailVerification.NotFoundError then res.status 404
+                    next(err)
 
 
 

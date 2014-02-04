@@ -13,31 +13,24 @@ module.exports= class AwesomeFront extends Module
 
 
 
+        @factory 'ProfileEmailVerification', require './models/ProfileEmailVerification'
+
+
+
         @factory 'AwesomeFrontApp', require './handlers'
 
 
 
-        #
-        # API
-        #
         @factory 'AwesomeFrontApi', require './handlers/Api/V1'
         @factory 'AwesomeFrontSignupApi', require './handlers/Api/V1/Signup'
 
 
 
-        #
-        # Экземпляр приложения Awesome
-        #
         @factory 'awesomeFront', (AwesomeFrontApp) ->
             new AwesomeFrontApp
 
 
 
-        #
-        # Экземпляр приложения Awesome API
-        #
-        # @version 1
-        #
         @factory 'awesomeFrontApi', (AwesomeFrontApi) ->
             new AwesomeFrontApi
 
