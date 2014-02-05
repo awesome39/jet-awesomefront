@@ -1,48 +1,23 @@
-extends ../layout
+extends ../../layout
 
 append head-scripts
     script
         :coffee
-
-
-
-            app= angular.module 'manage', ['awesome', 'app']
-            app.constant 'version', '0.4.7'
-
-            app.constant 'path', ''
-
-
-
-            app.config ($routeProvider, path, AppServiceProvider) ->
-                # Диалоги
-                $routeProvider.when '/login/:tab?', AppServiceProvider.Route.factory 'login', 'dialog',
-                    controller: 'LoginRouteDialogCtrl'
-
-
-
-            app.controller 'IndexRouteCtrl', ($scope) ->
-                console.log 'IndexRouteCtrl'
-
-            app.controller 'DesignRouteCtrl', ($scope) ->
-                console.log 'DesignRouteCtrl'
-
-            app.controller 'DevelopRouteCtrl', ($scope) ->
-                console.log 'DevelopRouteCtrl'
-
-            app.controller 'AppsRouteCtrl', ($scope) ->
-                console.log 'AppsRouteCtrl'
+            app= angular.module 'awesomeFront', ['layout', 'awesome']
 
 
 
 
 append app-main
+    style
+        :less
+            .layout-landing {
+                margin: 10% 15%;
+            }
+
     .layout-landing
         .row
             .col-12
                 h1 js
                     a: u jet engine
-                    p advanced angular on express
-                    p content management
-                    p framework for
-                    p node
                     p.fly: i.icon-rocket

@@ -1,7 +1,7 @@
 include mixins
 
 doctype html
-html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
+html(lang='ru', ng-app='app', ng-controller='AppCtrl')
 
 
     head
@@ -26,7 +26,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                 script(src='/scripts/libs/angular/angular-route.min.js')
                 script(src='/scripts/awesome.js')
 
-                script
+                //script
                     :coffee
 
 
@@ -61,7 +61,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
                         app.controller 'AppHeadCtrl', ($scope, User, $window) ->
                             $scope.logout= ->
                                 User.logout ->
-                                    $window.location.href= '/welcome/'
+                                    $window.location.href= '/my/'
                                     $scope.notify 'done', 'logout'
                                 , (err) ->
                                     $scope.notify 'error', err
@@ -70,7 +70,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
 
 
-    body(ng-controller='ViewCtrl'): block body
+    body: block body
         .b-app
             header.b-app--head(ng-controller="AppHeadCtrl"): block app-head
 
@@ -82,7 +82,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
                     .nav-collapse
 
-                        ul.nav.navbar-nav.pull-left
+                        ul.nav.navbar-nav.pull-left: block navbar-left
 
                             li: a(href="{{app.prefix}}/design")
                                 u Design
@@ -95,7 +95,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
 
                         if (!user || user.name == 'anonymous')
-                            ul.nav.navbar-nav.pull-right
+                            ul.nav.navbar-nav.pull-right: block navbar-left
 
                                 li: a(ng-href="{{app.prefix}}/login")
                                     u Sign In
@@ -105,7 +105,7 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
 
                         else
-                            ul.nav.navbar-nav.pull-right
+                            ul.nav.navbar-nav.pull-right: block navbar-left
 
                                 li: a(href='/project/')
                                     u Project
@@ -124,11 +124,6 @@ html(lang='ru', ng-app='awesomeFront', ng-controller='AppCtrl')
 
 
             main.b-app--body: .row
-                style
-                    :less
-                        .layout-landing {
-                            margin: 10% 15%;
-                        }
 
                 .b-app--main: block app-main
 

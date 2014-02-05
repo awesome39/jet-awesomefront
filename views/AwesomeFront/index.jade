@@ -5,7 +5,7 @@ extends ../layout
 append head-scripts
     script
         :coffee
-            app= angular.module 'awesomeFront', ['layout', 'awesome']
+            app= angular.module 'app', ['layout', 'awesome']
 
 
 
@@ -21,11 +21,11 @@ append head-scripts
 
 
 
-            app.controller 'LoginAppDialogCtrl', ($scope, User, $window) ->
+            app.controller 'LoginAppDialogCtrl', ($scope, User, $window, $location) ->
                 $scope.user= new User
                 $scope.login= (loginForm) ->
                     $scope.user.$login (user) ->
-                        $window.location.href= '../engine/'
+                        $window.location.href= '/my/'
                         $scope.notify 'done', 'authentication'
                     , (err) ->
                         $scope.user.pass= ''
@@ -33,14 +33,15 @@ append head-scripts
 
 
 
-            app.controller 'SignupAppDialogCtrl', ($scope, User, $window) ->
+            app.controller 'SignupAppDialogCtrl', ($scope, User, $window, $location) ->
                 $scope.user= new User
                 $scope.signup= (signupForm) ->
                     $scope.user.emails= []
                     $scope.user.emails.push
                         value: $scope.user.email
+
                     $scope.user.$signup (user) ->
-                        $window.location.href= '../engine/'
+                        $window.location.href= '/'
                         $scope.notify 'done', 'authentication'
                     , (err) ->
                         $scope.notify 'error', err
