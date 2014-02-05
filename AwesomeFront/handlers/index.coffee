@@ -37,7 +37,7 @@ module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
 
 
             app.get '/my'
-            ,   $authenticate('user')
+            ,   $authenticate()
             ,   $authorize('profile.select')
             ,   $audit('Cabinet rendering')
 

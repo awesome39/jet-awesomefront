@@ -19,8 +19,6 @@ module.exports= class AwesomeFront extends Module
 
         @factory 'AwesomeFrontApp', require './handlers'
 
-
-
         @factory 'AwesomeFrontApi', require './handlers/Api/V1'
         @factory 'AwesomeFrontSignupApi', require './handlers/Api/V1/Signup'
 
@@ -41,7 +39,9 @@ module.exports= class AwesomeFront extends Module
         injector.invoke (log) ->
             log 'INIT MODULE AwesomeFront'
 
-        injector.invoke (app, App, $auth) ->
+        injector.invoke (app, App) ->
+            app.use App.static "#{__dirname}/../../../pub/templates/AwesomeFront"
+
             #
             # Обработчик Awesome
             #

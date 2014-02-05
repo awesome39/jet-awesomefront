@@ -1,4 +1,4 @@
-extends ../layout
+extends layout
 
 
 
@@ -7,6 +7,24 @@ append head-scripts
         :coffee
             app= angular.module 'app', ['layout', 'awesome']
 
+
+
+            app.factory 'User', ($resource) ->
+                $resource '/api/v1/user/:action', {},
+                    login:
+                        method: 'post'
+                        params:
+                            action: 'login'
+
+                    logout:
+                        method: 'get'
+                        params:
+                            action: 'logout'
+
+                    signup:
+                        method: 'post'
+                        params:
+                            action: 'signup'
 
 
 
@@ -18,6 +36,16 @@ append head-scripts
 
                 $routeProvider.when '/signup', AppServiceProvider.Route.factory 'signup', 'dialog',
                     controller: 'SignupRouteDialogCtrl'
+
+
+
+            app.controller 'AppHeadCtrl', ($scope, User, $window) ->
+                $scope.logout= ->
+                    User.logout ->
+                        $window.location.href= '/'
+                        $scope.notify 'done', 'logout'
+                    , (err) ->
+                        $scope.notify 'error', err
 
 
 
@@ -46,6 +74,35 @@ append head-scripts
                     , (err) ->
                         $scope.notify 'error', err
 
+
+
+append navbar-left
+    li: a(ng-href="{{app.prefix}}/develop")
+        u Develop
+
+    li: a(ng-href="{{app.prefix}}/apps")
+        u Applications
+
+
+
+append navbar-right
+    if (!user || user.name == 'anonymous')
+        li: a(ng-href="{{app.prefix}}/login")
+            u Login
+
+        li: a(ng-href="{{app.prefix}}/signup")
+            u Sign up
+
+    else
+        li: a(href='/my/')
+            u My
+
+        li.dropdown
+            a
+                strong= user.name
+                i.caret
+            menu.nav.nav-list.dropdown-menu
+                li: a(ng-click="logout()") Logout
 
 
 
