@@ -1,0 +1,16 @@
+name: AppAudit
+description: Audit API
+
+
+
+config:
+
+    dependencies:
+
+        App: latest
+
+
+
+dependencies:
+
+    ware: 0.2.1

@@ -1,0 +1,21 @@
+
+enabled:
+
+    - AeLog
+
+    - AeConfig
+
+    - AeDb
+    - AeDbMaria
+    - AeDbRedis
+
+    - AeApp
+    - AeAppServer
+
+    - AeAppAuthentication
+    - AeAppAuthorization
+    - AeAppAudit
+
+    - AwesomeFront
+
+    - AeApiProfile

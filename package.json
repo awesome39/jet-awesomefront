@@ -1,0 +1,70 @@
+{
+  "name": "jet-frontoffice", "version":"0.0.1", "license": "GPL",
+  "repository": { "type": "git", "url": "https://github.com/awesome39/jet"},
+
+
+
+  "config": {
+    "build": {
+      "app": {
+        "root": "app",
+        "node": "app/node",
+        "nodeModules": "app/node_modules",
+        "pub": "app/pub"
+      },
+      "src": {
+        "root": "source",
+        "node": "source/node",
+        "nodeModules": "source/node_modules",
+        "pub": "source/pub"
+      }
+    }
+  },
+
+
+
+  "scripts": {
+    "install": "npm run-script install-source && npm run-script build",
+
+    "install-source": "cd source/pub/assets && bower install",
+
+    "build": "npm run-script build-node && npm run-script build-node-modules && npm run-script build-views",
+    "build-node": "grunt build-node",
+    "build-node-modules": "grunt build-node-modules",
+    "build-views": "grunt build-views",
+
+    "install-app": "cd app && npm install",
+
+    "clean": "grunt clean",
+
+    "serve": "npm run-script build-node && cd app && npm start",
+
+    "watch": "grunt watch",
+    "start": "npm run-script build && npm run-script watch"
+  },
+
+
+
+  "devDependencies": {
+    "bower": "latest",
+
+    "grunt": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-jade": "latest",
+    "grunt-contrib-less": "latest",
+    "grunt-bower-task": "latest",
+    "grunt-yaml": "latest",
+    "grunt-cli": "latest",
+    "coffee-script": "latest",
+    "less": "latest",
+
+    "mocha": "latest",
+    "chai": "latest",
+
+    "supertest": "latest"
+  }
+
+}

@@ -1,0 +1,10 @@
+name: Config
+description: Configuration Services
+
+version: 0.1.0
+
+
+
+dependencies:
+
+    extend: 1.2.1

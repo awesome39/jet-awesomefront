@@ -1,0 +1,12 @@
+name: AppSocket
+description: App Socket Services
+
+version: 0.1.0
+
+
+
+config:
+
+    dependencies:
+
+        App: latest

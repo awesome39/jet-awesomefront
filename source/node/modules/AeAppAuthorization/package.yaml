@@ -1,0 +1,13 @@
+name: AppAuthorization
+description: Authorization API
+
+version: 0.1.0
+
+
+
+config:
+
+    dependencies:
+
+        App: latest
+        AppAuthentication: latest

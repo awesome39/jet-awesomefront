@@ -1,0 +1,21 @@
+name: AppAuthentication
+description: Authentication API
+
+version: 0.1.0
+
+
+
+config:
+
+    dependencies:
+
+        App: latest
+
+
+
+dependencies:
+
+    connect-redis: 1.4.6
+
+    passport: 0.1.18
+    passport-local: 0.1.6

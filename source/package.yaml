@@ -1,0 +1,109 @@
+name: jet-frontoffice
+version: 0.0.1
+
+
+
+config:
+
+    logfile: './main.log'
+
+
+
+
+    path: ./node
+
+    default:
+
+        port: 8001
+
+        auth:
+
+            github:
+                clientID: cc9377048ebeabf941cf
+                clientSecret: 4b917b48ab0e2265802edb2b733c892833ad0a74
+
+        db:
+
+            maria:
+
+                host: 127.0.0.1
+                port: 3306
+
+                database: jet
+
+                user: jet
+                password: jet
+
+                timezone: Z
+
+                multipleStatements: true
+
+                debug:
+                    - ComQueryPacket
+
+            redis:
+
+                host: 127.0.0.1
+                port: 6379
+
+
+
+    development:
+
+        installed: false
+
+
+
+    testing:
+
+        installed: false
+
+        db:
+
+            maria:
+                database: jet_testing
+
+
+
+    staging:
+
+        installed: true
+
+        db:
+
+            maria:
+                database: jet_staging
+
+
+
+    production:
+
+        installed: true
+
+        db:
+
+            maria:
+                debug: false
+
+
+
+scripts:
+    start: node --harmony index.js
+
+
+
+dependencies:
+
+    di: 0.0.1
+    deferred: 0.6.8
+
+    express: 3.4.8
+
+    log: 1.4.0
+
+    request: 2.33.0
+
+
+
+engines:
+    node: ~0.10.20

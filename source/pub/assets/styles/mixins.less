@@ -1,0 +1,323 @@
+@import '../bower_components/awesome/components/mixins.less';
+
+.card {
+    &-col {
+        padding: 0;
+        border: 5px solid transparent;
+        &:first-child {
+            padding-left: 5px;
+            border-left: 0;
+        }
+        &:last-child {
+            padding-right: 5px;
+            border-right: 0;
+        }
+    }
+
+    padding: 10px;
+    background: #e2e2e2;
+    //transition-delay: 0.3s;
+    //&:hover {
+    //    margin: -5px;
+    //    padding: 15px;
+    //    background: #e2e2e2;
+    //    box-shadow:
+    //        inset 1px 1px 0 0 #FFF,
+    //        inset -1px -1px 0 0 #F2F2F2,
+    //        1px 1px 3px -1px rgba(0, 0, 0, 0.6)
+    //    ;
+    //}
+
+    &-title {
+        margin: 0 0 5px 0;
+        line-height: 20px;
+        font-family: 'segoe ui', arial;
+        font-size: 21px; font-weight: 400;
+        //text-transform: uppercase;
+        //letter-spacing: 2px;
+        .p {
+            display: block;
+            padding: 5px 0;
+            font-size: 16px; font-style: normal;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+    }
+}
+
+.card-side {
+    display: inline-block;
+    line-height: 20px;
+    font-family: 'segoe ui semilight', 'segoe ui light';
+    font-size: 14px;
+    text-align: right;
+    small {
+        padding-top: 15px;
+        display: block;
+        font-size: 10px;
+    }
+}
+
+
+.b-page {
+    &:before, &:after {
+        display: table; content: " ";
+    }
+    &:after {
+        clear: both;
+    }
+
+    &--head {
+        padding: 15px 0 5px;
+        border-bottom: 1px solid #E2E2E2;
+        &, & > h1 {
+            margin: 0;
+            line-height: 20px;
+            font-family: 'segoe ui', arial;
+            font-size: 18px; font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    }
+    &-head--btn {
+        &s {
+            padding: 30px 0 20px;
+        }
+        display: block;
+        padding: 20px;
+        color: #777;
+        background: #f2f2f2;
+        border-radius: 1px;
+
+        &, &.default {
+            border: 1px solid #e2e2e2;
+        }
+        &.primary {
+            color: #4082C4;
+            border: 1px solid rgba(64, 130, 196, 0.73);
+        }
+    }
+    &-head--menu {
+        display: block;
+        margin: 0; padding: 0;
+        font-size: 12px;
+        letter-spacing: 1px;
+        white-space: nowrap;
+        & > li {
+            display: inline-block;
+            margin-right: 10px;
+            & > a {
+                display: block;
+                padding: 5px 0;
+            }
+            &.active {
+                & > a {
+                    font-family: 'segoe ui semibold', 'segoe ui', 'ubuntu';
+                    font-weight: 600;
+                    color: #333;
+                    & > u {
+                        border-bottom-color: transparent;
+                    }
+                }
+            }
+        }
+    }
+    &--side {
+        float: left;
+        width: 80px;
+        padding: 0;
+        background-color: #f2f2f2;
+        .nav-list {
+            padding: 5px 0;
+
+            & > li > a {
+                padding: 4px 9px 4px 24px;
+            }
+
+            .nav-button {
+                display: block;
+                min-height: 50px;
+                padding: 5px;
+                border: 1px solid #e2e2e2;
+            }
+            .active {
+                & > a {
+                    //padding-right: 0px;
+                    color: #4082C4;
+                }
+                .nav-button {
+                    border-color: rgba(64, 130, 196, 0.37);
+                    border-right-color: transparent;
+                }
+            }
+        }
+    }
+    &--main {
+        margin-left: 80px;
+        padding: 0 15px;
+        background-color: #f2f2f2;
+        .section {
+
+        }
+        .section-nav {
+            margin: 9px 0;
+            border-top: 1px solid #e2e2e2;
+            .nav {
+                margin: 10px -15px;
+                & > li {
+                    & > a {
+                        padding: 3px 9px 5px 9px;
+                        border: 1px solid transparent;
+                    }
+                    &.active {
+                        & > a {
+                            font-family: 'segoe ui semibold', 'segoe ui', 'ubuntu';
+                            font-weight: 600;
+                            //background: #e2e2e2;
+                            border-top-color: rgba(64, 130, 196, 0.37);
+                            border-bottom-color: rgba(64, 130, 196, 0.37);
+                            border-left-color: rgba(64, 130, 196, 0.37);
+                        }
+                    }
+                }
+            }
+        }
+        .article-nav {
+            margin: 9px -5px; padding: 10px 0;
+            border-top: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+            .btn {
+                padding: 3px 9px 5px;
+                line-height: inherit;
+                color: #74AC2C;
+            }
+        }
+
+        .article-foot {
+            margin: 9px -5px; padding: 5px 0;
+            border-top: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+        }
+    }
+    &--foot {
+        padding: 0 15px;
+        border-bottom: 1px solid #e2e2e2;
+    }
+}
+
+.indicator {
+    display: block;
+    & > .value {
+        margin: 0;
+        margin: 5px 0 0;
+        border-top: 5px solid #F2F2F2;
+    }
+}
+
+.form .fieldset {
+    margin: 0;
+    padding: 10px 0 0;
+}
+.form .btn {
+    padding: 5px 10px;
+    line-height: 20px;
+    font-size: 14px;
+}
+
+.form .row {
+    margin: 0 -5px;
+}
+.form .row > * {
+    padding: 0 5px;
+}
+
+.b-dialog--body {
+    &:before, &:after {
+        display: table; content: " ";
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+.b-dialog .b-dialog--tabs > .nav.nav-tabs > li {
+    & > a {
+        font-family: 'segoe ui semibold';
+        font-weight: 500;
+    }
+    &.disable > a {
+        color: #b2b2b2 !important;
+        cursor: default !important;
+    }
+}
+
+.b-dialog--main-side {
+    float: left;
+    position: relative;
+    width: 210px;
+    .b-panel {
+        width: 240px; height: 240px;
+        margin: -15px -15px 15px;
+    }
+}
+.b-dialog--main-main {
+    position: relative;
+    margin-left: 255px;
+}
+.b-users-user--title {
+    margin: 0 0 5px;
+    font-family: 'segoe ui semilight' 'segoe ui light';
+    font-size: 42px; line-height: 36px;
+    font-weight: 400;
+}
+.b-users-user--name-label,
+.b-users-user--name {
+    margin: 0 0 30px;
+    font-size: 14px; line-height: 20px;
+    font-weight: 700;
+}
+.b-users-user--name {
+    font-family: 'segoe ui semibold' 'segoe ui';
+    font-size: 21px;
+}
+.b-users-user--accounts,
+.b-users-user--account {
+    display: inline-block;
+    vertical-align: baseline;
+}
+.b-users-user--account--type {
+    display: inline-block;
+    margin: 0px 0 4px 5px;
+    line-height: 20px;
+}
+
+.b-users-user--emails,
+.b-users-user--phones,
+.b-users-user--groups,
+.b-users-user--permissions,
+.b-users-user--sessions {
+    display: block;
+    margin-top: 25px;
+    &-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 11px;
+    }
+}
+.b-users-user--email,
+.b-users-user--phone,
+.b-users-user--group,
+.b-users-user--permission,
+.b-users-user--session {
+    display: inline-block;
+    margin: 0 10px 0 -5px;
+    padding: 5px 5px;
+}
+.b-users-user--permission {
+    & i {
+        display: inline-block;
+        width: 15px;
+        margin-right: -2px;
+        text-align: left;
+    }
+}

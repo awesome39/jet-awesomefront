@@ -1,0 +1,15 @@
+name: AwesomeFront
+description: Awesome front office
+
+
+
+config:
+
+    dependencies:
+        App: latest
+
+
+
+dependencies:
+
+    jade: 1.1.5

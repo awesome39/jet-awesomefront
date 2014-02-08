@@ -1,0 +1,161 @@
+mixin bDialog(type)
+    - if ('app' == type)
+        .b-dialog(ng-if="app.dialog.overlay", ng-init="dialog=app.dialog")
+            if block
+                block
+            else
+                +bDialogArea()
+                +bDialogMain()
+    - if ('view' == type)
+        .b-dialog(ng-if="view.dialog.overlay", ng-init="dialog=view.dialog")
+            if block
+                block
+            else
+                +bDialogArea()
+                +bDialogMain()
+
+mixin bDialogArea()
+    .b-dialog--area(ng-click="hideViewDialog()")
+
+mixin bDialogMain()
+    .b-dialog--main
+        if block
+            block
+
+mixin bDialogHead()
+    .b-dialog--head
+        if block
+            block
+
+mixin bDialogActs()
+    .b-dialog--acts
+        if block
+            block
+
+mixin bDialogActClose()
+    a(ng-click="hideViewDialog()"): i.icon-remove
+
+mixin bDialogTabs()
+    .b-dialog--tabs
+        if block
+            block
+
+mixin bDialogBody()
+    .b-dialog--body
+        if block
+            block
+
+
+
+mixin bEditDialog()
+    .b-dialog--dialog(ng-if="edit.dialog.overlay", ng-init="dialog=edit.dialog", ng-controller="EditDialogCtrl")
+        if block
+            block
+        else
+            +bEditDialogArea()
+            +bEditDialogMain()
+
+mixin bEditDialogArea()
+    .b-dialog--dialog--area(ng-click="hideEditDialog()")
+
+mixin bEditDialogMain()
+    .b-dialog--dialog--main
+        if block
+            block
+
+mixin bEditDialogHead()
+    .b-dialog--dialog--head.b-dialog--head
+        if block
+            block
+
+mixin bEditDialogActs()
+    .b-dialog--dialog--acts.b-dialog--acts
+        if block
+            block
+
+mixin bEditDialogActClose()
+    a(ng-click="hideEditDialog()"): i.icon-remove
+
+mixin bEditDialogBody()
+    .b-dialog--dialog--body.b-dialog--body
+        if block
+            block
+
+
+
+
+
+mixin bLoginSignupAppDialog()
+    .b-dialog--dialog--body.b-dialog--body
+        if block
+            block
+        else
+            .b-dialog(ng-if="app.dialog.overlay", ng-init="dialog=app.dialog")
+                .b-dialog--area(ng-click="hideViewDialog()")
+
+                .b-dialog--main
+                    .signin-dialog.b-users-login-dialog(ng-if="'login'==dialog.overlay", ng-controller="LoginAppDialogCtrl")
+
+
+                        .b-dialog--head
+                            i.icon-signin
+                            span Вход в центр управления
+                            .b-dialog--acts
+                                a(ng-click="hideViewDialog()"): i.icon-remove
+
+
+                        .b-dialog--tabs
+                            ul.nav.nav-tabs.pull-left
+                                li(ng-class="{active:!dialog.tab}"): a(ng-href="{{app.prefix}}/login") Вход в кабинет
+
+
+                        .b-dialog--body
+                            .row
+                                .col-xs-12.col-sm-offset-2.col-sm-8.col-lg-offset-2.col-lg-5
+                                    form.form.form-lg(name='loginPasswordForm', ng-submit='login(loginPasswordForm)').dialog-form
+                                        legend Вход с паролем
+                                        input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.username')
+                                        input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.password')
+                                        .form-acts
+                                            .row
+                                                .col-xs-12
+                                                    button.b-btn.b-btn-primary.btn-block(type='submit', ng-disabled='!loginPasswordForm.$valid')
+                                                        i.icon-signin
+                                                        span  Войти в кабинет
+                                .col-xs-12.col-sm-offset-2.col-sm-8.col-lg-offset-0.col-lg-3
+                                    form.form.form-lg.dialog-form
+                                        legend Вход с помощью
+                                        input(type='hidden', ng-model="lol", required)
+                                        a.btn.btn-link(href='/auth/github'): u Вход c Github
+                                        a.btn.btn-link(href='/auth/google'): u Вход c Google
+
+
+
+
+
+
+                    .signup-dialog.b-users-login-dialog(ng-if="'signup'==dialog.overlay", ng-controller="SignupAppDialogCtrl")
+
+
+                        .b-dialog--head
+                            i.icon-signin
+                            span Registration
+                            .b-dialog--acts
+                                a(ng-click="hideViewDialog()"): i.icon-remove
+
+
+                        .b-dialog--body
+                            .row
+                                .col-xs-12.col-sm-offset-2.col-sm-8.col-lg-offset-2.col-lg-5
+                                    form.form.form-lg(name='signupForm', ng-submit='signup(signupForm)').dialog-form
+                                        legend Sign up
+                                        input.input(type='text', name='title', placeholder='Name', required, ng-model='user.title')
+                                        input.input(type='text', name='name', placeholder='Login', required, ng-model='user.name')
+                                        input.input(type='password', name='pass', placeholder='Password', required, ng-model='user.pass')
+                                        input.input(type='text', name='email', placeholder='E-mail', required, ng-model='user.email')
+                                        .form-acts
+                                            .row
+                                                .col-xs-12
+                                                    button.b-btn.b-btn-primary.btn-block(type='submit', ng-disabled='!signupForm.$valid')
+                                                        i.icon-signin
+                                                        span Ok

@@ -1,1 +1,6 @@
+~*
+source/pub/assets/bower_components/*
+node_modules/*
 app/*
+*.log
+*.pid

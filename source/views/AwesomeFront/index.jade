@@ -1,0 +1,122 @@
+extends layout
+
+
+
+append head-scripts
+    script
+        :coffee
+            app= angular.module 'app', ['layout', 'awesome']
+
+
+
+            app.factory 'User', ($resource) ->
+                $resource '/api/v1/user/:action', {},
+                    login:
+                        method: 'post'
+                        params:
+                            action: 'login'
+
+                    logout:
+                        method: 'get'
+                        params:
+                            action: 'logout'
+
+                    signup:
+                        method: 'post'
+                        params:
+                            action: 'signup'
+
+
+
+            app.config ($routeProvider, path, AppServiceProvider) ->
+                # Диалоги
+                $routeProvider.when '/login', AppServiceProvider.Route.factory 'login', 'dialog',
+                    controller: 'LoginRouteDialogCtrl'
+
+
+                $routeProvider.when '/signup', AppServiceProvider.Route.factory 'signup', 'dialog',
+                    controller: 'SignupRouteDialogCtrl'
+
+
+
+            app.controller 'AppHeadCtrl', ($scope, User, $window) ->
+                $scope.logout= ->
+                    User.logout ->
+                        $window.location.href= '/'
+                        $scope.notify 'done', 'logout'
+                    , (err) ->
+                        $scope.notify 'error', err
+
+
+
+            app.controller 'LoginAppDialogCtrl', ($scope, User, $window, $location) ->
+                $scope.user= new User
+                $scope.login= (loginForm) ->
+                    $scope.user.$login (user) ->
+                        $window.location.href= '/my/'
+                        $scope.notify 'done', 'authentication'
+                    , (err) ->
+                        $scope.user.pass= ''
+                        $scope.notify 'error', err
+
+
+
+            app.controller 'SignupAppDialogCtrl', ($scope, User, $window, $location) ->
+                $scope.user= new User
+                $scope.signup= (signupForm) ->
+                    $scope.user.emails= []
+                    $scope.user.emails.push
+                        value: $scope.user.email
+
+                    $scope.user.$signup (user) ->
+                        $window.location.href= '/'
+                        $scope.notify 'done', 'authentication'
+                    , (err) ->
+                        $scope.notify 'error', err
+
+
+
+append navbar-left
+    li: a(ng-href="{{app.prefix}}/develop")
+        u Develop
+
+    li: a(ng-href="{{app.prefix}}/apps")
+        u Applications
+
+
+
+append navbar-right
+    if (!user || user.name == 'anonymous')
+        li: a(ng-href="{{app.prefix}}/login")
+            u Login
+
+        li: a(ng-href="{{app.prefix}}/signup")
+            u Sign up
+
+    else
+        li: a(href='/my/')
+            u My
+
+        li.dropdown
+            a
+                strong= user.name
+                i.caret
+            menu.nav.nav-list.dropdown-menu
+                li: a(ng-click="logout()") Logout
+
+
+
+append app-main
+    .layout-landing
+        .row
+            .col-12
+                h1 js
+                    a: u jet engine
+                    p advanced angular on express
+                    p content management
+                    p framework for
+                    p node
+                    p.fly: i.icon-rocket
+
+
+    +bLoginSignupAppDialog()
