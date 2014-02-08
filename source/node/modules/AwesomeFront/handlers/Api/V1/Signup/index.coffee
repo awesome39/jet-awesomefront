@@ -48,13 +48,17 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
             ###
             Включает указанного пользователя.
             ###
-            app.post '/:token/enable'
+            app.get '/:token/enable'
             ,   $audit('Verifying up personal information')
 
             ,   db.maria.middleware.transaction()
 
             ,   AwesomeFrontSignupApi.getToken('token')
+            ,   AwesomeFrontSignupApi.enableProfile()
             ,   AwesomeFrontSignupApi.enableProfileEmail()
+            ,   AwesomeFrontSignupApi.verifyProfileEmail()
+            ,   AwesomeFrontSignupApi.enableProfileAccount()
+            ,   AwesomeFrontSignupApi.enableProfilePermission()
             ,   AwesomeFrontSignupApi.deleteToken()
 
             ,   db.maria.middleware.transaction.commit()
@@ -92,17 +96,6 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
 
 
 
-        @getProfile: (param) -> (req, res, next) ->
-            profileId= req.param param
-            req.profile= Profile.getById profileId, req.maria
-            req.profile (profile) ->
-                    res.profile= profile
-                    next()
-            ,   (err) ->
-                    next(err)
-
-
-
         @createProfile: -> (req, res, next) ->
             data= req.body
             data.enabledAt= new Date
@@ -115,7 +108,8 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
 
         @createProfileEmails: -> (req, res, next) ->
             req.profile (profile) ->
-                req.profile.emails= Profile.createEmails profile.id, req.body.emails or [], req.maria
+                emails= req.body.emails or []
+                req.profile.emails= Profile.createEmails profile.id, emails, req.maria
                 req.profile.emails (emails) ->
                         res.profile.emails= emails
                         next()
@@ -124,7 +118,8 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
 
         @createProfilePhones: -> (req, res, next) ->
             req.profile (profile) ->
-                req.profile.phones= Profile.createPhones profile.id, req.body.phones or [], req.maria
+                phones= req.body.phones or []
+                req.profile.phones= Profile.createPhones profile.id, phones, req.maria
                 req.profile.phones (phones) ->
                         res.profile.phones= phones
                         next()
@@ -172,13 +167,14 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
             ,   (err) ->
                     if err instanceof ProfileEmailVerification.getByToken.BadValueError then res.status 400
                     if err instanceof ProfileEmailVerification.getByToken.NotFoundError then res.status 404
-                next(err)
+                    next(err)
 
         @enableProfile: -> (req, res, next) ->
-            profileId= req.token.profileId
+            profileId= res.token.profileId
             req.profile= Profile.enable profileId, 1, req.maria
             req.profile (profile) ->
                     res.profile= profile
+                    console.log
                     next()
             ,   (err) ->
                     if err instanceof Profile.enable.BadValueError then res.status 400
@@ -186,17 +182,18 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
                     next(err)
 
         @enableProfileEmail: -> (req, res, next) ->
-            emailId= req.token.emailId
-            req.profile (profile) ->
-                req.profile.email= Profile.enableEmail emailId, 1, req.maria
-                req.profile.email (email) ->
+            emailId= res.token.emailId
+            req.profile.email= Profile.enableEmail emailId, 1, req.maria
+            req.profile.email (email) ->
                     res.profile.email= email
                     next()
-                ,   (err) ->
+            ,   (err) ->
+                    if err instanceof Profile.enableEmail.BadValueError then res.status 400
+                    if err instanceof Profile.enableEmail.NotFoundError then res.status 404
                     next(err)
 
         @enableProfileAccount: -> (req, res, next) ->
-            profileId= req.token.profileId
+            profileId= res.token.profileId
             req.profile.account= Account.enableByProfileId profileId, 1, req.maria
             req.profile.account (account) ->
                     res.account= account
@@ -206,25 +203,38 @@ module.exports= (App, Profile, Account, ProfilePermission, ProfileEmailVerificat
                     if err instanceof Account.enableByProfileId.NotFoundError then res.status 404
                     next(err)
 
-        @enablePermission: -> (req, res, next) ->
-            profileId= req.param param
-            req.profile.permission= Profile.enable profileId, req.body, req.maria
+        @enableProfilePermission: -> (req, res, next) ->
+            profileId= res.token.profileId
+            req.profile.permission= ProfilePermission.enableByProfileId profileId, 1, req.maria
             req.profile.permission (permission) ->
-                res.profile.permission= permission
-                next()
+                    res.profile.permission= permission
+                    next()
             ,   (err) ->
-                if err instanceof Profile.enable.BadValueError then res.status 400
-                if err instanceof Profile.enable.NotFoundError then res.status 404
-                next(err)
+                    if err instanceof ProfilePermission.enableByProfileId.BadValueError then res.status 400
+                    if err instanceof ProfilePermission.enableByProfileId.NotFoundError then res.status 404
+                    next(err)
 
         @deleteToken: -> (req, res, next) ->
-            req.token= ProfileEmailVerification req.token.id, req.maria
+            req.token= ProfileEmailVerification.delete res.token.id, req.maria
             req.token (token) ->
-                res.token= token
-                next()
+                    res.token= token
+                    next()
             ,   (err) ->
                     if err instanceof ProfileEmailVerification.BadValueError then res.status 400
                     if err instanceof ProfileEmailVerification.NotFoundError then res.status 404
+                    next(err)
+
+
+
+        @verifyProfileEmail: -> (req, res, next) ->
+            emailId= res.token.emailId
+            req.profile.verify= Profile.verifyEmail emailId, 1, req.maria
+            req.profile.verify (email) ->
+                    res.profile.verify= email
+                    next()
+            ,   (err) ->
+                    if err instanceof Profile.verifyEmail.BadValueError then res.status 400
+                    if err instanceof Profile.verifyEmail.NotFoundError then res.status 404
                     next(err)
 
 

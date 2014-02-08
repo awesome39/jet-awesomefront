@@ -1204,42 +1204,44 @@ module.exports= (Account, ProfileGroup, ProfilePermission, log) -> class Profile
 
     @enableEmail: (emailId, enabled, db) ->
         dfd= do deferred
-        try
 
-            if not emailId
-                throw new @enableEmail.BadValueError 'emailId cannot be null'
+        process.nextTick =>
+            try
+
+                if not emailId
+                    throw new @enableEmail.BadValueError 'emailId cannot be null'
 
 
-            enabled= enabled|0
+                enabled= enabled|0
 
-            db.query """
-                UPDATE
-                    ??
-                   SET
-                    enabledAt= IF(?, IF(enabledAt, enabledAt, NOW()), NULL)
-                 WHERE
-                    emailId= ?
-                ;
-                SELECT
-                    enabledAt
-                  FROM
-                    ??
-                 WHERE
-                    emailId= ?
-                """
-            ,   [@tableEmail, enabled, emailId, @tableEmail, emailId]
-            ,   (err, res) =>
-                    if err
-                        throw new Error err
+                db.query """
+                    UPDATE
+                        ??
+                       SET
+                        enabledAt= IF(?, IF(enabledAt, enabledAt, NOW()), NULL)
+                     WHERE
+                        id= ?
+                    ;
+                    SELECT
+                        enabledAt
+                      FROM
+                        ??
+                     WHERE
+                        id= ?
+                    """
+                ,   [@tableEmail, enabled, emailId, @tableEmail, emailId]
+                ,   (err, res) =>
+                        if err
+                            throw new Error err
 
-                    enabledAt= res[1][0].enabledAt
-                    enabled= !!enabledAt
-                    dfd.resolve
-                        enabledAt: enabledAt
-                        enabled: enabled
+                        enabledAt= res[1][0].enabledAt
+                        enabled= !!enabledAt
+                        dfd.resolve
+                            enabledAt: enabledAt
+                            enabled: enabled
 
-        catch err
-            dfd.reject err
+            catch err
+                dfd.reject err
 
         dfd.promise
 
@@ -1248,5 +1250,60 @@ module.exports= (Account, ProfileGroup, ProfilePermission, log) -> class Profile
             @message= message
 
     @enableEmail.NotFoundError= class EnableNotFoundError extends Error
+        constructor: (message) ->
+            @message= message
+
+
+
+
+
+    @verifyEmail: (emailId, verified, db) ->
+        dfd= do deferred
+
+        process.nextTick =>
+            try
+
+                if not emailId
+                    throw new @verifyEmail.BadValueError 'emailId cannot be null'
+
+
+                verified= verified|0
+
+                db.query """
+                    UPDATE
+                        ??
+                       SET
+                        verifiedAt= IF(?, IF(verifiedAt, verifiedAt, NOW()), NULL)
+                     WHERE
+                        id= ?
+                    ;
+                    SELECT
+                        verifiedAt
+                      FROM
+                        ??
+                     WHERE
+                        id= ?
+                    """
+                ,   [@tableEmail, verified, emailId, @tableEmail, emailId]
+                ,   (err, res) =>
+                    if err
+                        throw new Error err
+
+                    verifiedAt= res[1][0].verifiedAt
+                    verified= !!verifiedAt
+                    dfd.resolve
+                        verifiedAt: verifiedAt
+                        verified: verified
+
+            catch err
+                dfd.reject err
+
+        dfd.promise
+
+    @verifyEmail.BadValueError= class EnableBadValueError extends Error
+        constructor: (message) ->
+            @message= message
+
+    @verifyEmail.NotFoundError= class EnableNotFoundError extends Error
         constructor: (message) ->
             @message= message

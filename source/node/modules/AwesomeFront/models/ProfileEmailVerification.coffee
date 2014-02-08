@@ -11,6 +11,7 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
         @id= data.id
         @token= data.token
         @emailId= data.emailId
+        @profileId= data.profileId
         @verifiedAt= data.verifiedAt
         @value= data.value
 
@@ -18,7 +19,7 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
 
 
 
-    @create: (emailId, db, done) ->
+    @create: (emailId, db) ->
         dfd= do deferred
 
         process.nextTick =>
@@ -61,14 +62,14 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
                     """
                 ,   [@table, token, emailId, @table, @Profile.tableEmail]
                 ,   (err, res) =>
-                    if not err
+                        if err
+                            throw new Error err
+
                         if res[0].affectedRows == 1 and res[1].length == 1
                             data= new @ res[1][0]
                             dfd.resolve data
                         else
-                            err= Error 'token not created'
-                    else
-                        dfd.reject err
+                            throw new Error 'token not created'
 
             catch err
                 dfd.reject err
@@ -111,14 +112,14 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
                 """
             ,   [@table, @Profile.tableEmail]
             ,   (err, rows) =>
-                    if not err
-                        profiles= []
-                        if rows.length
-                            for row in rows
-                                profiles.push new @ row
-                        dfd.resolve tokens
-                    else
-                        dfd.reject err
+                    if err
+                        throw new Error err
+
+                    tokens= []
+                    if rows.length
+                        for row in rows
+                            tokens.push new @ row
+                    dfd.resolve tokens
 
         dfd.promise
 
@@ -129,7 +130,6 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
     @getById: (id, db) ->
         dfd= do deferred
 
-        token= null
         process.nextTick =>
             try
                 if not id
@@ -158,20 +158,19 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
                     WHERE
                         Token.id = ?
                     """
-                ,   [@table, @tableProfileLink, id]
+                ,   [@table, @Profile.tableEmail, id]
                 ,   (err, rows) =>
+                        if err
+                            throw new Error err
 
-                    if not err and rows.length == 0
-                        throw new @getById.NotFoundError 'token not found'
+                        if not err and rows.length == 0
+                            throw new @getById.NotFoundError 'token not found'
 
-                    if err
-                        throw new Error err
-
-
-                    row= rows.shift()
-                    if row.id
-                        token= new @ row
-                    dfd.resolve token
+                        token= null
+                        row= rows.shift()
+                        if row.id
+                            token= new @ row
+                        dfd.resolve token
 
             catch err
                 dfd.reject err
@@ -193,7 +192,6 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
     @getByToken: (token, db) ->
         dfd= do deferred
 
-        token= null
         process.nextTick =>
             try
                 if not token
@@ -222,20 +220,20 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
                     WHERE
                         Token.token = ?
                     """
-                ,   [@table, @tableProfileLink, token]
+                ,   [@table, @Profile.tableEmail, token]
                 ,   (err, rows) =>
+                        if err
+                            throw new Error err
 
-                    if not err and rows.length == 0
-                        throw new @getByToken.NotFoundError 'token not found'
-
-                    if err
-                        throw new Error err
+                        if not err and rows.length == 0
+                            throw new @getByToken.NotFoundError 'token not found'
 
 
-                    row= rows.shift()
-                    if row.id
-                        token= new @ row
-                    dfd.resolve token
+                        token= null
+                        row= rows.shift()
+                        if row.id
+                            token= new @ row
+                        dfd.resolve token
 
             catch err
                 dfd.reject err
@@ -254,19 +252,13 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
 
 
 
-    @delete: (id, db, done) ->
+    @delete: (id, db) ->
         dfd= do deferred
         try
 
-            err= null
             if not id
-                err= new @delete.BadValueError 'id cannot be null'
+                throw new @delete.BadValueError 'id cannot be null'
 
-            if err
-                if done instanceof Function
-                    process.nextTick ->
-                        done err
-                return dfd.reject err
 
             db.query """
                 DELETE
@@ -278,18 +270,13 @@ module.exports= (Profile, log) -> class ProfileEmailVerification
                 """
             ,   [@table, id]
             ,   (err, res) =>
+                    if err
+                        throw new Error err
 
-                    if not err
-                        if res.affectedRows == 1
-                            dfd.resolve true
-                        else
-                            dfd.reject err= new @delete.NotFoundError 'not deleted'
+                    if res.affectedRows == 1
+                        dfd.resolve true
                     else
-                        dfd.reject err
-
-                    if done instanceof Function
-                        process.nextTick ->
-                            done err, data
+                        throw new @delete.NotFoundError 'not deleted'
 
         catch err
             dfd.reject err

@@ -395,6 +395,65 @@ module.exports= (log) -> class Account
 
 
 
+    @enableByProfileId: (profileId, enabled, db) ->
+        dfd= do deferred
+
+        process.nextTick =>
+            try
+
+                if not profileId
+                    throw new @enable.BadValueError 'id cannot be null'
+
+
+                enabled= enabled|0
+
+                db.query """
+                    UPDATE
+                        ??
+                    SET
+                        enabledAt= IF(?, IF(enabledAt, enabledAt, NOW()), NULL)
+                    WHERE
+                        profileId= ?
+                    ;
+                    SELECT
+                        enabledAt
+                    FROM
+                        ??
+                    WHERE
+                        profileId= ?
+                    """
+                ,   [@table, enabled, profileId, @table, profileId]
+                ,   (err, res) =>
+                        if err
+                            throw new Error err
+                        if res.length == 0
+                            throw new @enableByProfileId.NotFoundError 'not found'
+
+                        enabledAt= res[1][0].enabledAt
+                        enabled= !!enabledAt
+
+                        data=
+                            enabledAt: enabledAt
+                            enabled: enabled
+                        dfd.resolve data
+
+            catch err
+                dfd.reject err
+
+        dfd.promise
+
+    @enableByProfileId.BadValueError= class EnableBadValueError extends Error
+        constructor: (message) ->
+            @message= message
+
+    @enableByProfileId.NotFoundError= class EnableNotFoundError extends Error
+        constructor: (message) ->
+            @message= message
+
+
+
+
+
     @filterDataForUpdate: (data) ->
         data=
             pass: @sha1 data.pass
