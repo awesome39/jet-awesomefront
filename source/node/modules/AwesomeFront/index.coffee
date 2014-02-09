@@ -40,13 +40,13 @@ module.exports= class AwesomeFront extends Module
             log 'INIT MODULE AwesomeFront'
 
         injector.invoke (app, App) ->
-            app.use App.static "#{__dirname}/../../../pub/templates/AwesomeFront"
-
             #
             # Обработчик Awesome
             #
             app.use '/', injector.invoke (awesomeFront) ->
                 awesomeFront
+
+            app.use App.static "#{__dirname}/../../../pub/templates/AwesomeFront"
 
 
 

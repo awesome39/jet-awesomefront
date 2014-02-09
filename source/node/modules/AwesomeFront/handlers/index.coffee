@@ -37,22 +37,15 @@ module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
 
 
             app.get '/my'
-            ,   $authenticate()
-            ,   $authorize('profile.select')
-            ,   $audit('Cabinet rendering')
+            #,   $authenticate()
+            #,   $authorize('profile.select')
+            #,   $audit('Cabinet rendering')
 
             ,   (req, res, next) ->
-                    try
-                        req.profile (profile) ->
-                                log 'profile resolved', profile
-                                res.locals.user= profile
-                                res.render 'AwesomeFront/my/index'
-                        ,   (err) ->
-                                log 'profile rejected', err
-                                next err
-
-                    catch err
-                        next err
+                    if req.isAuthenticated()
+                        next()
+                    else
+                        res.redirect '/'
 
 
 

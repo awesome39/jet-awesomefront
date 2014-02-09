@@ -57,7 +57,7 @@ append navbar-right
 
     li.dropdown
         a
-            strong= user.name
+            strong {{ user.name }}
             i.caret
         menu.nav.nav-list.dropdown-menu
             li: a(ng-click="logout()") Logout
