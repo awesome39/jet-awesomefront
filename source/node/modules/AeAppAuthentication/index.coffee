@@ -112,6 +112,13 @@ module.exports= class AppAuthenticationModule extends Module
 
 
 
+        @factory 'IsAuthenticateService', require './services/IsAuthenticate'
+
+        @factory '$isAuthenticate', (IsAuthenticateService) ->
+            new IsAuthenticateService
+
+
+
     #
     # Initialize module with injector.
     #

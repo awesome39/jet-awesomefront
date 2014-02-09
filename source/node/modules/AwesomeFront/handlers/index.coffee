@@ -1,4 +1,4 @@
-module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
+module.exports= (App, $authenticate, $authorize, $audit, $isAuthenticate, db, log) ->
     class AwesomeFrontApp extends App
 
         constructor: ->
@@ -37,15 +37,9 @@ module.exports= (App, $authenticate, $authorize, $audit, db, log) ->
 
 
             app.get '/my'
-            #,   $authenticate()
-            #,   $authorize('profile.select')
-            #,   $audit('Cabinet rendering')
+            ,   $isAuthenticate('/')
 
-            ,   (req, res, next) ->
-                    if req.isAuthenticated()
-                        next()
-                    else
-                        res.redirect '/'
+
 
 
 
