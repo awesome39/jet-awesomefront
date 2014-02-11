@@ -28,7 +28,7 @@ module.exports= (Profile, log) -> class AuthenticateService
 
 
                 if req.isAuthenticated()
-                    profileId= req.account.profileId or 1
+                    profileId= req.account.profileId
                     req.profile= Profile.getByIdFromRedis profileId, req.redis
                     req.profile (profile) ->
 
